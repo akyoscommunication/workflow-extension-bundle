@@ -3,6 +3,7 @@
 namespace LeTots\WorkflowExtension\DependencyInjection\Compiler;
 
 use LeTots\WorkflowExtension\Attribute\AsWorkflow;
+use ReflectionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
@@ -12,13 +13,16 @@ use ReflectionClass;
 
 class WorkflowExtensionCompilerPass implements CompilerPassInterface
 {
+	/**
+	 * @throws ReflectionException
+	 */
 	public function process(ContainerBuilder $container)
 	{
 		// Parcourir tous les services définis dans le conteneur
 		foreach ($container->getDefinitions() as $definition) {
 			$class = $definition->getClass();
 			
-			if (!$class || !class_exists($class)) {
+			if (!$class || !class_exists($class, false)) {
 				continue;
 			}
 			
