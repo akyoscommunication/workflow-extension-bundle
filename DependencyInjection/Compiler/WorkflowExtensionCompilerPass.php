@@ -16,7 +16,7 @@ class WorkflowExtensionCompilerPass implements CompilerPassInterface
 	/**
 	 * @throws ReflectionException
 	 */
-	public function process(ContainerBuilder $container)
+	public function process(ContainerBuilder $container): void
 	{
 		// Parcourir tous les services définis dans le conteneur
 		foreach ($container->getDefinitions() as $definition) {
@@ -33,6 +33,7 @@ class WorkflowExtensionCompilerPass implements CompilerPassInterface
 				/** @var AsWorkflow $workflowAttr */
 				$workflowAttr = $attribute->newInstance();
 				$workflowName = $workflowAttr->name;
+				$workflowSupportStrategy = $workflowAttr->supportStrategy;
 				
 				// Enregistrer le service du workflow en spécifiant explicitement la classe
 				$container->register($class)
@@ -41,8 +42,8 @@ class WorkflowExtensionCompilerPass implements CompilerPassInterface
 				
 				// Ajouter le workflow au registry avec un alias basé sur le nom du workflow
 				$container->register('workflow.'.$workflowName, WorkflowInterface::class)
-					->setClass(WorkflowInterface::class)  // Spécifier la classe WorkflowInterface
-					->setFactory([new Reference($class), '__invoke']) // Utilisation de la méthode __invoke
+					->setClass(WorkflowInterface::class)
+					->setFactory([new Reference($class), '__invoke'])
 					->setPublic(true);
 				
 				// Retrouver le service Registry et ajouter le workflow
@@ -50,11 +51,11 @@ class WorkflowExtensionCompilerPass implements CompilerPassInterface
 					$registryDefinition = $container->findDefinition(Registry::class);
 					$registryDefinition->addMethodCall('addWorkflow', [
 						new Reference('workflow.'.$workflowName),
-						$class::WORKFLOW_SUPPORT_STRATEGY
+						$workflowSupportStrategy
 					]);
 				}
 				
-				// Créer un alias pour que Symfony puisse retrouver le workflow par son nom
+				// Création d'un alias pour pouvoir utiliser le workflow par son nom
 				$container->setAlias(WorkflowInterface::class . ' $'.$workflowName, 'workflow.'.$workflowName);
 			}
 		}
