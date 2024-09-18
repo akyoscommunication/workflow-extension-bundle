@@ -14,7 +14,7 @@ use Symfony\Component\Workflow\Transition as WorkflowTransition;
 
 abstract class AbstractWorkflow
 {
-	private array $initial = [];
+	private string|array|null $initial = null;
 	
 	/**
 	 * @throws ReflectionException
@@ -35,6 +35,15 @@ abstract class AbstractWorkflow
 		$places = $this->getPlaces();
 		$transitions = $this->getTransitions($places);
 		$attributeArguments = $workflowAttributes[0]->getArguments();
+		
+		if(is_array($this->initial)) {
+			if(count($this->initial) === 0) {
+				$this->initial = null;
+			}
+			if(count($this->initial) === 1) {
+				$this->initial = $this->initial[0];
+			}
+		}
 		
 		$definition = new Definition($places, $transitions, $this->initial);
 		$markingStore = new MethodMarkingStore(
@@ -67,7 +76,7 @@ abstract class AbstractWorkflow
 			}
 			
 			$attributeArguments = $constantPlaceAttributes[0]->getArguments();
-
+			
 			if(isset($attributeArguments['initial']) && $attributeArguments['initial']) {
 				$this->initial[] = $reflectionClassConstant->getValue();
 			}
@@ -77,7 +86,7 @@ abstract class AbstractWorkflow
 		
 		return $places;
 	}
-
+	
 	public function getTransitions(array $places): array
 	{
 		$transitions = [];
