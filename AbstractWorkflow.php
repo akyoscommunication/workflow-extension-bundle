@@ -12,7 +12,7 @@ use Symfony\Component\Workflow\MarkingStore\MethodMarkingStore;
 use Symfony\Component\Workflow\Workflow;
 use Symfony\Component\Workflow\Transition as WorkflowTransition;
 
-abstract class AbstractWorkflow
+abstract class AbstractWorkflow extends Workflow
 {
 	private string|array|null $initial = null;
 	
