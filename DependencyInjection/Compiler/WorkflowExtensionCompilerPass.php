@@ -43,7 +43,7 @@ class WorkflowExtensionCompilerPass implements CompilerPassInterface
 				// Ajouter le workflow au registry avec un alias basé sur le nom du workflow
 				$container->register('workflow.'.$workflowName, WorkflowInterface::class)
 					->setClass(WorkflowInterface::class)
-					->setFactory([new Reference($class), '__invoke'])
+					->setFactory([new Reference($class), '__construct'])
 					->setPublic(true);
 				
 				// Retrouver le service Registry et ajouter le workflow

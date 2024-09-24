@@ -8,18 +8,17 @@ use LeTots\WorkflowExtension\Attribute\Place;
 use LeTots\WorkflowExtension\Attribute\Transition;
 use ReflectionClass;
 use Symfony\Component\Workflow\Definition;
+use Symfony\Component\Workflow\MarkingStore\MarkingStoreInterface;
 use Symfony\Component\Workflow\MarkingStore\MethodMarkingStore;
 use Symfony\Component\Workflow\Workflow;
 use Symfony\Component\Workflow\Transition as WorkflowTransition;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 abstract class AbstractWorkflow extends Workflow
 {
 	private string|array|null $initial = null;
 	
-	/**
-	 * @throws ReflectionException
-	 */
-	public function __invoke(): Workflow
+	public function __construct()
 	{
 		$reflectionClass = new ReflectionClass($this);
 		$workflowAttributes = $reflectionClass->getAttributes(AsWorkflow::class);
@@ -51,7 +50,7 @@ abstract class AbstractWorkflow extends Workflow
 			isset($attributeArguments['markingStoreProperty']) ? $attributeArguments['markingStoreProperty'] : 'status'
 		);
 		
-		return (new Workflow($definition, $markingStore, null, $attributeArguments['name']));
+		parent::__construct($definition, $markingStore, null, $attributeArguments['name'], null);
 	}
 	
 	/**
