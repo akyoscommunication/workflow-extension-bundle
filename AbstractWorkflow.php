@@ -14,7 +14,7 @@ use Symfony\Component\Workflow\Workflow;
 use Symfony\Component\Workflow\Transition as WorkflowTransition;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-abstract class AbstractWorkflow extends Workflow
+abstract class AbstractWorkflow extends Workflow implements WorkflowInterface
 {
 	private string|array|null $initial = null;
 	
